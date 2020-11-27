@@ -6,17 +6,24 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000
 const app = express();
 
-
+const establishmentR = require('./routes/establishment');
+const adminR = require('./routes/admin');
+const employeeR = require('./routes/employee');
+const problemR = require('./routes/problem')
 const clientR = require('./routes/client');
+const appointmentR = require('./routes/appointment');
 
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-
+app.use('/api/establishment', establishmentR);
+app.use('/api/admin', adminR);
+app.use('/api/employee', employeeR);
+app.use('/api/problem', problemR);
 app.use('/api/client', clientR);
-
+app.use('/api/appointment', appointmentR);
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');

@@ -9,12 +9,11 @@ const appointmentSchema = mongoose.Schema({
     clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true },
     empId: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true},
     problemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Problem', required: true},
-    Date: {type: String, required: true },
-    Time: {type: String, required: true },
-    Status: { type: String, required: true },
-    Duration: { type: Number, required: true },
-    Text: { type: String, required: true },
-    DeptNum: { type: Number, required: true }
+    Date: {type: Date, required: false, default: Date.now() },
+    Place: { type: Number, required: true },
+    Duration: { type: Number, default: 10, required: true },
+    Text: { type: String, default: "-", required: true },
+    EmpNum: { type: Number, required: true }
 });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);
