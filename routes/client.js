@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt');
 
 const Client = require('../models/client');
 
@@ -26,27 +27,26 @@ router.get('/', (req, res, next) => {
         }));
 });
 router.post("/", (req, res, next) => {
-    const client = new Client({
-        _id: new mongoose.Types.ObjectId(),
-        Name: req.body.Name,
-        Surname:req.body.Surname,
-        SecondName: req.body.SecondName,
-        Email: req.body.Email,
-        Phone: req.body.Phone,
-        Password: req.body.Password,
-        FingerId: req.body.FingerId,
-        Status: req.body.Status
-    });
-    client
-        .save()
-        .then(result => {
-            console.log(result);
+    bcrypt.hash(req.body.Password, 10, (err, result) => {
+        const client = new Client({
+            _id: new mongoose.Types.ObjectId(),
+            Name: req.body.Name,
+            Surname: req.body.Surname,
+            SecondName: req.body.SecondName,
+            Email: req.body.Email,
+            Phone: req.body.Phone,
+            Password: result
+        });
+        client
+            .save()
+            .then(result => {
+                console.log(result);
+            })
+            .catch(err => console.log(err));
+        res.status(200).json({
+            message: "Create is successful!",
         })
-        .catch(err => console.log(err));
-    res.status(201).json({
-        message: "Create is successful!",
     })
-
 })
 router.get('/:idClient', (req, res, next) => {
     Client.findById({"_id": req.params.idClient})
@@ -82,10 +82,7 @@ router.patch("/:idClient", (req, res, next) => {
             Surname: req.body.Surname,
             SecondName: req.body.SecondName,
             Email: req.body.Email,
-            Phone: req.body.Phone,
-            Password: req.body.Password,
-            FingerId: req.body.FingerId,
-            Status: req.body.Status
+            Phone: req.body.Phone
         }})
         .exec()
         .then(result => {
@@ -122,12 +119,8 @@ router.post("/sign-in", (req, res, next) => {
         .then(user => {
             if(req.body.Password === user[0].Password) {
                 const token = jwt.sign({
-                        _id: user._id
-                    },
-                    JWT_KEY,
-                    {
-                        expiresIn: "1h"
-                    });
+                        _id: user[0]._id
+                    }, JWT_KEY);
                 return res.status(200).json({
                     token: token
                 });

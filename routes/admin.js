@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const Admin = require('../models/admin');
 const Establishment = require('../models/establishment')
@@ -117,23 +118,27 @@ router.delete("/:idAdmin", (req, res, next) => {
 router.post("/sign-in", (req, res, next) => {
     Admin.find({ "Login": req.body.Login})
         .exec()
-        .then(user => {
-            if(req.body.Password === user[0].Password) {
-                const token = jwt.sign({
-                        _id: user._id,
-                    },
-                    JWT_KEY,
-                    {
-                        expiresIn: "1h"
-                    });
-                console.log("token: ", token)
-                return res.status(200).json({
-                    token: token
+        .then(admin => {
+            if(admin[0] === undefined) {
+                return res.status(404).json({
+                    message: "This user does not exist!"
                 });
+            } else {
+                bcrypt.compare(req.body.Password, admin[0].Password, (err, result) => {
+                    if (result) {
+                        const token = jwt.sign({ _id: admin[0]._id }, JWT_KEY);
+                        console.log("token: ", token)
+                        return res.status(200).json({
+                            token: token
+                        });
+                    }
+                    else {
+                        return res.status(401).json({
+                            message: "Auth failed"
+                        });
+                    }
+                })
             }
-            res.status(401).json({
-                message: "Auth failed"
-            });
         })
         .catch(err => {
             console.log(err);

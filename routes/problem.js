@@ -82,7 +82,6 @@ router.get('/:idProblem', (req, res, next) => {
 
 router.patch("/:idProblem", (req, res, next) => {
     Problem.update({ _id: req.params.idProblem}, { $set: {
-            estId: req.body.estId,
             Text: req.body.Text,
             Duration: req.body.Duration
         }})
@@ -119,19 +118,19 @@ router.delete("/:idProblem", (req, res, next) => {
 router.get('/list/:idEst', (req, res, next) => {
     Problem.find({ "estId": req.params.idEst})
         .exec()
-        .then(docs => {
-            if(docs) {
-                res.status(200).json(docs);
-            } else {
-                res.status(404).json({ message: "No problems are in database!" })
+        .then(problems => {
+            if (!problems) {
+                return res.status(404).json({
+                    message: 'Problems are not found!'
+                });
             }
+            res.status(200).json(problems)
         })
-        .catch((err => {
-            console.log(err);
+        .catch(err => {
             res.status(500).json({
                 error: err
-            });
-        }));
+            })
+        });
 });
 
 module.exports = router;
