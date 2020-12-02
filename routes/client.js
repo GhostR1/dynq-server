@@ -136,7 +136,7 @@ router.post("/sign-in", (req, res, next) => {
         });
 });
 
-router.patch("/scan/:idClient", (req, res, next) => {
+router.patch("/status/:idClient", (req, res, next) => {
     Client.update({ _id: req.params.idClient}, { $set: {
             Status: req.body.Status
         }})

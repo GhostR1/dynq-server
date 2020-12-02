@@ -126,7 +126,10 @@ router.post("/sign-in", (req, res, next) => {
             } else {
                 bcrypt.compare(req.body.Password, admin[0].Password, (err, result) => {
                     if (result) {
-                        const token = jwt.sign({ _id: admin[0]._id }, JWT_KEY);
+                        const token = jwt.sign({
+                            _id: admin[0]._id,
+                            estId: admin[0].estId
+                        }, JWT_KEY);
                         console.log("token: ", token)
                         return res.status(200).json({
                             token: token

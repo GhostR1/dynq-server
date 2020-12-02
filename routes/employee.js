@@ -170,7 +170,8 @@ router.post("/sign-in", (req, res, next) => {
                 bcrypt.compare(req.body.Password, user[0].Password, (err, result) => {
                     if (result) {
                         const token = jwt.sign({
-                                _id: user[0]._id
+                                _id: user[0]._id,
+                                estId: user[0].estId
                             }, JWT_KEY);
                         console.log("token: ", token)
                         return res.status(200).json({

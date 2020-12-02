@@ -125,7 +125,7 @@ router.get('/queue/:idEmp', (req, res, next) => {
                     message: 'Appointments are not found'
                 });
             }
-            res.status(200).json({queue})
+            res.status(200).json(queue)
         })
         .catch(err => {
             res.status(500).json({
